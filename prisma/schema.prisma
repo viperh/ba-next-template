@@ -14,18 +14,44 @@ datasource db {
 }
 
 model User {
-  id            String    @id
+  id            String     @id
   name          String
   email         String
-  emailVerified Boolean   @default(false)
+  emailVerified Boolean    @default(false)
   image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @default(now()) @updatedAt
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @default(now()) @updatedAt
   sessions      Session[]
   accounts      Account[]
+  UserRole      UserRole[]
 
   @@unique([email])
   @@map("user")
+}
+
+model Role {
+  id          String     @id @default(cuid())
+  name        String     @unique
+  description String?
+  users       UserRole[]
+}
+
+model UserRole {
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  role   Role   @relation(fields: [roleId], references: [id])
+  roleId String
+
+  assignedAt   DateTime @default(now())
+  assignedById String?
+
+  @@id([userId, roleId])
+}
+
+model Permission {
+  id   String @id @default(cuid())
+  code String @unique
 }
 
 model Session {

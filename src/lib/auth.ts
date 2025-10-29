@@ -1,7 +1,8 @@
 import {betterAuth} from "better-auth";
 import {prismaAdapter} from "better-auth/adapters/prisma";
-// If your Prisma file is located elsewhere, you can change the path
 import {PrismaClient} from "@prisma/client";
+import {resetPassword} from "./actions";
+import {admin as adminPlugin} from "better-auth/plugins/admin"
 
 const prisma = new PrismaClient();
 export const auth = betterAuth({
@@ -13,14 +14,23 @@ export const auth = betterAuth({
 	emailAndPassword: {
 		enabled: true,
 		autoSignIn: true,
+		sendResetPassword: resetPassword,
+	},
+	changePassword: {
+		enabled: true,
 	},
 	user: {
 		changeEmail: {
 			enabled: true,
-		},
-		changePassword: {
-			enabled: true,
 		}
-	}
+	},
+	
+	plugins: [
+		adminPlugin({
+			defaultRole: "user",
+			adminRoles: ["admin"],
+			ac: undefined,
+		})
+	]
+	
 });
-
